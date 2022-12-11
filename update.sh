@@ -40,19 +40,19 @@ else
     lipc-set-prop com.lab126.cmd wirelessEnable 0
 
     # Disable useless services
-    # stop lab126_gui
-    # stop x
-    # # stop framework
-    # stop otaupd
-    # stop phd
-    # stop tmd
-    # stop todo
-    # stop mcsd
-    # stop archive
-    # stop dynconfig
-    # stop dpmd
-    # stop appmgrd
-    # stop stackdumpd
+    stop lab126_gui
+    stop x
+    # stop framework
+    stop otaupd
+    stop phd
+    stop tmd
+    stop todo
+    stop mcsd
+    stop archive
+    stop dynconfig
+    stop dpmd
+    stop appmgrd
+    stop stackdumpd
 
     # stop otaupd
     # stop phd
@@ -69,13 +69,13 @@ else
         # Clear screen
         eips -c
 
+        # Fill background
+        eips -d l=0,w=$SCREEN_WIDTH,h=$SCREEN_HEIGHT
+
         # Draw background
         if [[ -f "$BACKGROUND" ]]; then
             $FBINK -g file=$BACKGROUND,w=$SCREEN_WIDTH,h=$SCREEN_HEIGHT
         fi
-
-        # Fill background
-        eips -d l=0,w=$SCREEN_WIDTH,h=$SCREEN_HEIGHT
 
         ## Day background
         eips -d l=ff,w=$((672*X_RATIO/100)),h=$((408*Y_RATIO/100)) -x $((X_RATIO*43/100)) -y $((Y_RATIO*232/100))
@@ -105,11 +105,11 @@ else
         $FBINK -C GRAYE -O -m -M -t regular=$QUOTE_FONT,size=$QUOTE_LABEL_SIZE,top=$((820*Y_RATIO/100)),left=$((43*X_RATIO/100)),right=$((43*X_RATIO/100)),bottom=$((5*Y_RATIO/100)),padding=BOTH,format "$QUOTE"
 
         # Set powersave mode
-        #echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+        echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
         # Schedule next update
-        # rtcwake -d /dev/rtc1 -m no -s $INTERVAL_TIME
-        # echo "mem" > /sys/power/state
+        rtcwake -d /dev/rtc1 -m no -s $INTERVAL_TIME
+        echo "mem" > /sys/power/state
 
         echo `date '+%Y-%m-%d_%H:%M:%S'`: Sleeping >> $LOG_FILE
 
