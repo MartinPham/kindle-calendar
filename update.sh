@@ -18,29 +18,33 @@ if [[ -f "$PWD/DISABLE" ]]; then
 else
     echo `date '+%Y-%m-%d_%H:%M:%S'`: Calendar Enabled > $LOG_FILE
 
+    # Screen resolution
     SCREEN_WIDTH=600
     SCREEN_HEIGHT=800
-    START_DELAY_TIME=15
-    INTERVAL_TIME=21600
-    LOOP_DELAY_TIME=3
+
+    # Label sizes
     DAY_LABEL_SIZE=55
     DATE_LABEL_SIZE=130
     MONTHYEAR_LABEL_SIZE=45
     QUOTE_LABEL_SIZE=20
 
+    # Timer
+    START_DELAY_TIME=15
+    INTERVAL_TIME=21600
+    LOOP_DELAY_TIME=3
 
-    FBINK="/mnt/us/extensions/MRInstaller/bin/K5/bin/fbink"
-    # FBINK="fbink"
-    ORIGINAL_SCREEN_WIDTH=758
-    ORIGINAL_SCREEN_HEIGHT=1024
-    X_RATIO=$((SCREEN_WIDTH*100/ORIGINAL_SCREEN_WIDTH))
-    Y_RATIO=$((SCREEN_HEIGHT*100/ORIGINAL_SCREEN_HEIGHT))
+    # FBINK="/mnt/us/extensions/MRInstaller/bin/K5/bin/fbink"
+    FBINK="fbink"
     FONT=$PWD/GoboldBold.ttf
     BACKGROUND=$PWD/background.png
     QUOTE_FONT=$PWD/AppleChancery.ttf
     QUOTES=$PWD/quotes.txt
     WEEKDAYS=$PWD/weekdays.txt
     MONTHS=$PWD/months.txt
+    ORIGINAL_SCREEN_WIDTH=758
+    ORIGINAL_SCREEN_HEIGHT=1024
+    X_RATIO=$((SCREEN_WIDTH*100/ORIGINAL_SCREEN_WIDTH))
+    Y_RATIO=$((SCREEN_HEIGHT*100/ORIGINAL_SCREEN_HEIGHT))
 
     # Delay start
     sleep $START_DELAY_TIME
@@ -94,10 +98,10 @@ else
         $FBINK -C GRAYE -O -m -t regular=$FONT,size=$DAY_LABEL_SIZE,top=$((35*Y_RATIO/100)),format "$DAY"
 
         # Date
-        $FBINK -C BLACK -O -m -t regular=$FONT,size=$DATE_LABEL_SIZE,top=$((240*Y_RATIO/100)),format $(date +%d)
+        $FBINK -C BLACK -O -m -t regular=$FONT,size=$DATE_LABEL_SIZE,top=$((240*Y_RATIO/100)),format $(date +%-d)
         
         # Moth/Year
-        MONTH=`sed "$(date +%m)q;d" $MONTHS`
+        MONTH=`sed "$(date +%-m)q;d" $MONTHS`
         $FBINK -C GRAYE -O -m -t regular=$FONT,size=$MONTHYEAR_LABEL_SIZE,top=$((663*Y_RATIO/100)),format "$MONTH $(date +%Y)"
 
         # Quotes
@@ -108,7 +112,7 @@ else
         
         QUOTE=`sed "${RANDOM}q;d" $QUOTES`
 
-        $FBINK -C GRAYE -O -m -M -t regular=$QUOTE_FONT,size=$QUOTE_LABEL_SIZE,top=$((833*Y_RATIO/100)),left=$((43*X_RATIO/100)),right=$((43*X_RATIO/100)),bottom=$((20*Y_RATIO/100)),padding=BOTH,format "$QUOTE"
+        $FBINK -C GRAYE -O -m -M -t regular=$QUOTE_FONT,size=$QUOTE_LABEL_SIZE,top=$((820*Y_RATIO/100)),left=$((43*X_RATIO/100)),right=$((43*X_RATIO/100)),bottom=$((5*Y_RATIO/100)),padding=BOTH,format "$QUOTE"
 
         # Set powersave mode
         echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
