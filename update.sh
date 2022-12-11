@@ -10,28 +10,12 @@
 # [ -f ./update.sh ] && exec ./update.sh 
 
 
-PWD=$(pwd)
-LOG_FILE=$PWD/output.log
+. ./config.sh
 
 if [[ -f "$PWD/DISABLE" ]]; then
     echo `date '+%Y-%m-%d_%H:%M:%S'`: Calendar Disabled > $LOG_FILE
 else
     echo `date '+%Y-%m-%d_%H:%M:%S'`: Calendar Enabled > $LOG_FILE
-
-    # Screen resolution
-    SCREEN_WIDTH=600
-    SCREEN_HEIGHT=800
-
-    # Label sizes
-    DAY_LABEL_SIZE=55
-    DATE_LABEL_SIZE=130
-    MONTHYEAR_LABEL_SIZE=45
-    QUOTE_LABEL_SIZE=20
-
-    # Timer
-    START_DELAY_TIME=15
-    INTERVAL_TIME=21600
-    LOOP_DELAY_TIME=3
 
     # FBINK="/mnt/us/extensions/MRInstaller/bin/K5/bin/fbink"
     FBINK="fbink"
@@ -56,19 +40,20 @@ else
     lipc-set-prop com.lab126.cmd wirelessEnable 0
 
     # Disable useless services
-    stop lab126_gui
-    stop x
-    # stop framework
-    stop otaupd
-    stop phd
-    stop tmd
-    stop todo
-    stop mcsd
-    stop archive
-    stop dynconfig
-    stop dpmd
-    stop appmgrd
-    stop stackdumpd
+    # stop lab126_gui
+    # stop x
+    # # stop framework
+    # stop otaupd
+    # stop phd
+    # stop tmd
+    # stop todo
+    # stop mcsd
+    # stop archive
+    # stop dynconfig
+    # stop dpmd
+    # stop appmgrd
+    # stop stackdumpd
+
     # stop otaupd
     # stop phd
     # stop tmd
@@ -83,6 +68,11 @@ else
 
         # Clear screen
         eips -c
+
+        # Draw background
+        if [[ -f "$BACKGROUND" ]]; then
+            $FBINK -g file=$BACKGROUND,w=$SCREEN_WIDTH,h=$SCREEN_HEIGHT
+        fi
 
         # Fill background
         eips -d l=0,w=$SCREEN_WIDTH,h=$SCREEN_HEIGHT
@@ -107,7 +97,7 @@ else
         # Quotes
         TOTAL_QUOTES=`wc -l < $QUOTES`
         RANDOM=`</dev/urandom sed 's/[^[:digit:]]\+//g' | head -n2 | tr -dc '0-9' | sed 's/[^0-9]*//g'`
-        RANDOM=${RANDOM:0:10} || 0
+        #RANDOM=${RANDOM:0:10} || 0
         RANDOM=$((1$RANDOM % $TOTAL_QUOTES)) || 0
         
         QUOTE=`sed "${RANDOM}q;d" $QUOTES`
@@ -115,11 +105,11 @@ else
         $FBINK -C GRAYE -O -m -M -t regular=$QUOTE_FONT,size=$QUOTE_LABEL_SIZE,top=$((820*Y_RATIO/100)),left=$((43*X_RATIO/100)),right=$((43*X_RATIO/100)),bottom=$((5*Y_RATIO/100)),padding=BOTH,format "$QUOTE"
 
         # Set powersave mode
-        echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+        #echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
         # Schedule next update
-        rtcwake -d /dev/rtc1 -m no -s $INTERVAL_TIME
-        echo "mem" > /sys/power/state
+        # rtcwake -d /dev/rtc1 -m no -s $INTERVAL_TIME
+        # echo "mem" > /sys/power/state
 
         echo `date '+%Y-%m-%d_%H:%M:%S'`: Sleeping >> $LOG_FILE
 
