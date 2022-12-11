@@ -68,7 +68,7 @@ After jailbreaking, you can install [USBNetwork](https://www.mobileread.com/foru
 
 
 ### **Configuration**
-
+- To change day names, month names, and quotes, you can edit  `extensions/calendar/weekdays.txt`, `extensions/calendar/months.txt` and `extensions/calendar/quotes.txt`
 - Adjust configurations on `extensions/calendar/config.sh` to match your device.
 - SSH into your Kindle.
 - Invoke `mntroot rw` to mount filesystem into writable mode.
