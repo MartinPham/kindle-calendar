@@ -11,28 +11,36 @@
 
 
 PWD=$(pwd)
-LOG_FILE=$PWD/log.txt
+LOG_FILE=$PWD/output.log
 
 if [[ -f "$PWD/DISABLE" ]]; then
-    echo "Calendar Disabled" > $LOG_FILE
+    echo `date '+%Y-%m-%d_%H:%M:%S'`: Calendar Disabled > $LOG_FILE
 else
-    echo "Calendar Enabled" > $LOG_FILE
+    echo `date '+%Y-%m-%d_%H:%M:%S'`: Calendar Enabled > $LOG_FILE
 
-    SCREEN_WIDTH=758
-    SCREEN_HEIGHT=1024
+    SCREEN_WIDTH=600
+    SCREEN_HEIGHT=800
     START_DELAY_TIME=15
     INTERVAL_TIME=21600
     LOOP_DELAY_TIME=3
+    DAY_LABEL_SIZE=55
+    DATE_LABEL_SIZE=130
+    MONTHYEAR_LABEL_SIZE=45
+    QUOTE_LABEL_SIZE=20
 
 
-    FBINK="/mnt/us/extensions/MRInstaller/bin/K5/fbink"
+    FBINK="/mnt/us/extensions/MRInstaller/bin/K5/bin/fbink"
+    # FBINK="fbink"
     ORIGINAL_SCREEN_WIDTH=758
     ORIGINAL_SCREEN_HEIGHT=1024
-    X_RATIO=$((SCREEN_WIDTH/ORIGINAL_SCREEN_WIDTH))
-    Y_RATIO=$((SCREEN_HEIGHT/ORIGINAL_SCREEN_HEIGHT))
+    X_RATIO=$((SCREEN_WIDTH*100/ORIGINAL_SCREEN_WIDTH))
+    Y_RATIO=$((SCREEN_HEIGHT*100/ORIGINAL_SCREEN_HEIGHT))
     FONT=$PWD/GoboldBold.ttf
+    BACKGROUND=$PWD/background.png
     QUOTE_FONT=$PWD/AppleChancery.ttf
     QUOTES=$PWD/quotes.txt
+    WEEKDAYS=$PWD/weekdays.txt
+    MONTHS=$PWD/months.txt
 
     # Delay start
     sleep $START_DELAY_TIME
@@ -71,24 +79,26 @@ else
 
         # Clear screen
         eips -c
-        
+
         # Fill background
         eips -d l=0,w=$SCREEN_WIDTH,h=$SCREEN_HEIGHT
 
-        # Day background
-        eips -d l=ff,w=$((672*X_RATIO)),h=$((408*Y_RATIO)) -x $((X_RATIO*43)) -y $((Y_RATIO*232))
+        ## Day background
+        eips -d l=ff,w=$((672*X_RATIO/100)),h=$((408*Y_RATIO/100)) -x $((X_RATIO*43/100)) -y $((Y_RATIO*232/100))
 
-        # Month/year background
-        eips -d l=7e,w=$((672*X_RATIO)),h=$((179*Y_RATIO)) -x $((X_RATIO*43)) -y $((Y_RATIO*640))
+        ## Month/year background
+        eips -d l=7e,w=$((672*X_RATIO/100)),h=$((179*Y_RATIO/100)) -x $((X_RATIO*43/100)) -y $((Y_RATIO*640/100))
 
         # Day
-        $FBINK -C GRAYE -O -m -t regular=$FONT,size=$((55*X_RATIO)),top=$((35*Y_RATIO)),format  $(date +%A | tr a-z A-Z)
+        DAY=`sed "$(date +%u)q;d" $WEEKDAYS`
+        $FBINK -C GRAYE -O -m -t regular=$FONT,size=$DAY_LABEL_SIZE,top=$((35*Y_RATIO/100)),format "$DAY"
 
         # Date
-        $FBINK -C BLACK -O -m -t regular=$FONT,size=$((130*X_RATIO)),top=$((240*Y_RATIO)),format  $(date +%d)
+        $FBINK -C BLACK -O -m -t regular=$FONT,size=$DATE_LABEL_SIZE,top=$((240*Y_RATIO/100)),format $(date +%d)
         
         # Moth/Year
-        $FBINK -C GRAYE -O -m -t regular=$FONT,size=$((45*X_RATIO)),top=$((663*Y_RATIO)),format  "$(date +%b | tr a-z A-Z) $(date +%Y)"
+        MONTH=`sed "$(date +%m)q;d" $MONTHS`
+        $FBINK -C GRAYE -O -m -t regular=$FONT,size=$MONTHYEAR_LABEL_SIZE,top=$((663*Y_RATIO/100)),format "$MONTH $(date +%Y)"
 
         # Quotes
         TOTAL_QUOTES=`wc -l < $QUOTES`
@@ -98,7 +108,7 @@ else
         
         QUOTE=`sed "${RANDOM}q;d" $QUOTES`
 
-        $FBINK -C GRAYE -O -m -t regular=$QUOTE_FONT,size=$((20*X_RATIO)),top=$((833*Y_RATIO)),left=$((43*X_RATIO)),right=$((43*X_RATIO)),bottom=$((100*Y_RATIO)),format "$QUOTE"
+        $FBINK -C GRAYE -O -m -M -t regular=$QUOTE_FONT,size=$QUOTE_LABEL_SIZE,top=$((833*Y_RATIO/100)),left=$((43*X_RATIO/100)),right=$((43*X_RATIO/100)),bottom=$((20*Y_RATIO/100)),padding=BOTH,format "$QUOTE"
 
         # Set powersave mode
         echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
@@ -108,6 +118,9 @@ else
         echo "mem" > /sys/power/state
 
         echo `date '+%Y-%m-%d_%H:%M:%S'`: Sleeping >> $LOG_FILE
+
+        # truncate log
+        echo "$(tail -n 100 $LOG_FILE)" > $LOG_FILE
 
         sleep $LOOP_DELAY_TIME;
     done
