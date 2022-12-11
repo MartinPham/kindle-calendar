@@ -20,7 +20,6 @@ else
     # FBINK="/mnt/us/extensions/MRInstaller/bin/K5/bin/fbink"
     FBINK="fbink"
     FONT=$PWD/GoboldBold.ttf
-    BACKGROUND=$PWD/background.png
     QUOTE_FONT=$PWD/AppleChancery.ttf
     QUOTES=$PWD/quotes.txt
     WEEKDAYS=$PWD/weekdays.txt

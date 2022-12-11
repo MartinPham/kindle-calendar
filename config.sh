@@ -2,7 +2,7 @@ export PWD=$(pwd)
 export LOG_FILE=$PWD/output.log
 
 # Background image
-export BACKGROUND=$PWD/background.png
+export BACKGROUND=$PWD/background.png.disabled
 
 # Screen resolution
 export SCREEN_WIDTH=600
